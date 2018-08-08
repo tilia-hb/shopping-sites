@@ -6,7 +6,7 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash, make_response, request
+from flask import Flask, render_template, redirect, flash, make_response, request, session
 import jinja2
 
 import melons
@@ -61,8 +61,10 @@ def show_shopping_cart():
     # TODO: Display the contents of the shopping cart.
 
     # The logic here will be something like:
-    #
+    
     # - get the cart dictionary from the session
+    # cookie = request.cookies[melon_id]
+
     # - create a list to hold melon objects and a variable to hold the total
     #   cost of the order
     # - loop over the cart dictionary, and for each melon id:
@@ -76,10 +78,26 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
-    return render_template("cart.html")
+    session["cart"] = session.get("cart",{})
+    cart = session["cart"]
+
+    melon_types = melons.read_melon_types_from_file("melons.txt")
+
+    # total = 0
+    # for melon_id,qty  in cart.items():
+    #     total += melon_types[melon_id].price * qty
+
+    total = sum([melon_types[melon_id].price * qty for melon_id,qty in cart.items()])
+    
+
+    return render_template("cart.html",
+                            s_cart = session["cart"],
+                            melon_dict = melon_types,
+                            total = total
+                            )
 
 
-@app.route("/add_to_cart/<melon_id>")
+@app.route("/add_to_cart/<melon_id>", methods=['GET'])
 def add_to_cart(melon_id):
     """Add a melon to cart and redirect to shopping cart page.
 
@@ -95,14 +113,36 @@ def add_to_cart(melon_id):
     #   dictionary keyed to the string "cart") if not
     # - check if the desired melon id is the cart, and if not, put it in
     # - increment the count for that melon id by 1
+
+
+    # import pdb;pdb.set_trace()
+
+    #this should set melon_obj to the Melon 
+    # object associated with the melon_id
+
+    melon_obj = melons.get_by_id(melon_id)
+    # flash(melon_obj)
+
+    # if there's a key "cart" in the dictionary
+    # session then it does nothing
+    # Otherwise we create an empty dictionary
+    # at key "cart"
+    session["cart"] = session.get("cart",{}) 
+
+    # sets the variable cart to be the dictionary
+    # stored there
+    cart = session["cart"]
+    
+    # the value 
+    cart[melon_id] = cart.get(melon_obj,0) + 1 
+
     # - flash a success message
     # - redirect the user to the cart page
 
-    html = render_template("cart.html")
-    resp = make_response(html)
-    resp.set_cookie(melon_id)
+    # flash("added {} to cart!".format(melon_obj))
 
-    return resp
+
+    return redirect("/cart")
 
 
 @app.route("/login", methods=["GET"])
@@ -149,4 +189,4 @@ def checkout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
