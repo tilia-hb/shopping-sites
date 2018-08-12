@@ -29,8 +29,13 @@ class Melon(object):
 
     def price_str(self):
         """Return price formatted as string $x.xx"""
-
         return "${:.2f}".format(self.price)
+
+    def mult_price(self,qty):
+        return "${:.2f}".format((self.price) * qty)
+        
+
+# instead of taking self, instead take a float 
 
     def __repr__(self):
         """Convenience method to show information about melon in console."""
@@ -71,6 +76,8 @@ def read_melon_types_from_file(filepath):
 
     return melon_types
 
+def format_price(flt):
+    return "${:.2f}".format(flt)
 
 def get_all():
     """Return list of melons.

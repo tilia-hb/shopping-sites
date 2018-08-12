@@ -20,8 +20,9 @@
         <tr>
             <td>{{ melon_dict[melon_id].common_name }}</td>
             <td>{{ qty }}</td>
-            <td> {{ melon_dict[melon_id].price }} </td>
-            <td> {{ melon_dict[melon_id].price * qty}} </td>
+            
+            <td> {{ melon_dict[melon_id].price_str() }} </td>
+            <td> {{ melon_dict[melon_id].mult_price(qty)}} </td>
         </tr>
         {% endfor %}
         </tbody>

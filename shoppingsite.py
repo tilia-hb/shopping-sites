@@ -88,7 +88,8 @@ def show_shopping_cart():
     #     total += melon_types[melon_id].price * qty
 
     total = sum([melon_types[melon_id].price * qty for melon_id,qty in cart.items()])
-    
+    total ='${:0,.2f}'.format(total)
+
 
     return render_template("cart.html",
                             s_cart = session["cart"],
@@ -115,12 +116,12 @@ def add_to_cart(melon_id):
     # - increment the count for that melon id by 1
 
 
-    # import pdb;pdb.set_trace()
 
     #this should set melon_obj to the Melon 
     # object associated with the melon_id
 
-    melon_obj = melons.get_by_id(melon_id)
+    
+    # melon_obj = melons.get_by_id(melon_id)
     # flash(melon_obj)
 
     # if there's a key "cart" in the dictionary
@@ -134,7 +135,8 @@ def add_to_cart(melon_id):
     cart = session["cart"]
     
     # the value 
-    cart[melon_id] = cart.get(melon_obj,0) + 1 
+    # import pdb;pdb.set_trace()
+    cart[melon_id] = cart.get(melon_id,0) + 1 
 
     # - flash a success message
     # - redirect the user to the cart page
